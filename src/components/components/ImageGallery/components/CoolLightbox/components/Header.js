@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import Color from "color";
+// import Color from "color";
 import ButtonControl from "./ButtonControl";
 
 const LightboxHeader = ({ images, currentIndex, onClose }) => (
@@ -10,7 +10,7 @@ const LightboxHeader = ({ images, currentIndex, onClose }) => (
       <PageIndicator>
         {currentIndex + 1} / {images.length}
       </PageIndicator>
-      <CloseButton className='closeL' onClick={onClose} type="button">
+      <CloseButton className="closeL" onClick={onClose} type="button">
         <i className="fa fa-close"></i>
       </CloseButton>
     </RightSideContainer>
@@ -23,13 +23,12 @@ LightboxHeader.propTypes = {
   images: PropTypes.arrayOf(
     PropTypes.shape({
       src: PropTypes.string,
-      alt: PropTypes.string
+      alt: PropTypes.string,
     })
-  ).isRequired
+  ).isRequired,
 };
 
 export default LightboxHeader;
-
 
 const PageIndicator = styled.span`
   white-space: nowrap;
@@ -51,8 +50,6 @@ const CloseButton = styled(ButtonControl)`
   color: inherit;
 `;
 
-
-
 const TopHeaderBar = styled.header`
   z-index: 10;
   cursor: auto;
@@ -60,12 +57,14 @@ const TopHeaderBar = styled.header`
   justify-content: space-between;
   padding: 10px 2px 10px 20px;
   color: ${({ theme }) => theme.headerNavFontColor};
-  background-color: ${({ theme }) =>
+  ${
+    "" /* background-color: ${({ theme }) =>
     Color(theme.pageBackgroundColor)
       .alpha(0.5)
       .hsl()
       .string()};
   > * {
     height: inherit;
+  } */
   }
 `;

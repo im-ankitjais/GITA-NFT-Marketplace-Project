@@ -11,7 +11,7 @@ import ItemDetail from "./pages/ItemDetail";
 import Author from "./pages/Author";
 import Works from "./pages/works";
 import News from "./pages/news";
-import Create2 from "./pages/create2";
+import Create from "./pages/create";
 import Contact from "./pages/contact";
 import ElegantIcons from "./pages/elegantIcons";
 import EtlineIcons from "./pages/etlineIcons";
@@ -63,7 +63,7 @@ const app = () => (
           <Author path="/Author" />
           <Works path="/works" />
           <News path="/news" />
-          <Create2 path="/create2" />
+          <Create path="/create" />
           <Contact path="/contact" />
 
           <ElegantIcons path="/elegantIcons" />

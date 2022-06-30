@@ -1,31 +1,32 @@
-# Getting Started with Create React App
+# SMART CONTRACTS
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Deploy Contract
 
-## Available Scripts
+```
+truffle compile --all
+truffle migrate --network mumbai
+```
 
-In the project directory, you can run:
+### Copy NFT and Market Addresses from output to env file field
 
-### `npm install`
+### Copy NFT.json, Market.json from build/contracts to src/lib/abi
 
-Installs the app dependencies npm-packages in the development mode.
-The dependencies list can be checked in package.json file.
+# REACT APP
 
+### Setup env file
 
-### `npm start`
+```
+REACT_APP_CHAIN_ID=0x13881
+REACT_APP_CHAIN_NAME=Polygon Mumbai
+REACT_APP_POLYGON_RPC_URL=
+REACT_APP_POLYGON_SCAN_LINK=https://mumbai.polygonscan.com
+REACT_APP_MNEMONIC=
+REACT_APP_MARKET_ADDRESS=
+REACT_APP_NFT_ADDRESS=
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+npm i --legacy-peer-deps
+npm start
+```

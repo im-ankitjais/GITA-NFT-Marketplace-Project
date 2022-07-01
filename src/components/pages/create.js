@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
-import NFTService from "../../lib/services/nftService";
+import PostService from "../../lib/services/postService";
 import { navigate } from "@reach/router";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.sticky.white {
@@ -36,7 +36,7 @@ const GlobalStyles = createGlobalStyle`
     }
   }
 `;
-const _nftService = new NFTService();
+const _postService = new PostService();
 const Createpage = () => {
   const [file, setFile] = useState({
     name: "",
@@ -54,7 +54,7 @@ const Createpage = () => {
     try {
       var selectedFile = e.target.files[0];
       console.log(selectedFile);
-      let url = await _nftService.uploadImage(selectedFile);
+      let url = await _postService.uploadImage(selectedFile);
       setFile({
         name: selectedFile.name,
         url: url,
@@ -66,17 +66,21 @@ const Createpage = () => {
   const createNFT = async (e) => {
     e.preventDefault();
     try {
-      let metaURL = await _nftService.uploadMeta(
+      let metaURL = await _postService.uploadMeta(
         formData.name,
         formData.description,
         file.url
       );
-      let tokenResp = await _nftService.createToken(metaURL);
-      let sellResp = await _nftService.sellNft(
-        tokenResp.tokenId,
-        formData.price
-      );
-      console.log("sellResp", sellResp);
+      let tokenResp = await _postService.createToken(metaURL);
+      if (formData.method === 0) {
+        await _postService.sellNft(tokenResp.tokenId, formData.price);
+      } else {
+        await _postService.auctionNft(
+          tokenResp.tokenId,
+          formData.minBid,
+          formData.duration
+        );
+      }
       navigate("/explore");
     } catch (error) {
       console.log(error);

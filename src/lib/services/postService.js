@@ -7,7 +7,7 @@ import axios from "axios";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
-export default class NFTService {
+export default class PostService {
   async getGasPrice() {
     try {
       let gas_price_URL =
@@ -24,7 +24,8 @@ export default class NFTService {
       gas_price = gas_price < 30000000000 ? 30000000000 : gas_price;
       return gas_price;
     } catch (error) {
-      return Promise.reject(error);
+      return 30000000000;
+      // return Promise.reject(error);
     }
   }
 
@@ -146,13 +147,49 @@ export default class NFTService {
       const signer = provider.getSigner();
     } catch (error) {}
   }
-  async auctionNft(tokenId, minBid, expDays) {
+  async auctionNft(tokenId, minBid, expDays, oldItem = false) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
+      let marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      const _minBid = ethers.utils.parseUnits(minBid, "ether");
+      if (oldItem === true) {
+        await this.approveContract();
+      }
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.createAuction(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        _minBid,
+        expDays
+      );
+      console.log(estimate_gas.toNumber());
+      let transaction = await marketContract.createAuction(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        _minBid,
+        expDays,
+        {
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+      let tx = await transaction.wait();
+      // let itemIdValue = tx.events[2].args["itemId"];
+      // let expValue = tx.events[2].args["endDate"];
+      // let itemId = itemIdValue.toNumber();
+      // let endDate = expValue.toNumber();
+      return { txHash: tx.transactionHash };
+    } catch (error) {
+      console.log(error);
+      return Promise.reject(error.data.message);
+    }
   }
   async bidNft(tokenId, minBid, expDays) {
     try {

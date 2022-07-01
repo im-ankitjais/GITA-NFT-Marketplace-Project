@@ -3,7 +3,6 @@ import Breakpoint, {
   BreakpointProvider,
   setDefaultBreakpoints,
 } from "react-socks";
-import { header } from "react-bootstrap";
 import { Link } from "@reach/router";
 import useOnclickOutside from "react-cool-onclickoutside";
 import WalletService from "../../lib/services/WalletService";
@@ -163,12 +162,6 @@ const Header = function () {
                               My Profile
                             </NavLink>
                             <NavLink
-                              to="/ItemDetail"
-                              onClick={() => btn_icon(!showmenu)}
-                            >
-                              Items Details
-                            </NavLink>
-                            <NavLink
                               to="/helpcenter"
                               onClick={() => btn_icon(!showmenu)}
                             >
@@ -200,7 +193,7 @@ const Header = function () {
                               to="/create2"
                               onClick={() => btn_icon(!showmenu)}
                             >
-                              Create 2
+                              Create NFT
                             </NavLink>
                             <NavLink
                               to="/news"
@@ -315,7 +308,6 @@ const Header = function () {
                           <div className="dropdown" onClick={closeMenu1}>
                             <NavLink to="/explore">Explore</NavLink>
                             <NavLink to="/my-profile">My Profile</NavLink>
-                            <NavLink to="/ItemDetail">Items Details</NavLink>
                             <NavLink to="/helpcenter">Help Center</NavLink>
                           </div>
                         </div>
@@ -336,7 +328,7 @@ const Header = function () {
                         <div className="item-dropdown">
                           <div className="dropdown" onClick={closeMenu2}>
                             <NavLink to="/Author">Author</NavLink>
-                            <NavLink to="/create2">Create 2</NavLink>
+                            <NavLink to="/create2">Create NFT</NavLink>
                             <NavLink to="/news">News</NavLink>
                             <NavLink to="/works">Gallery</NavLink>
                             <NavLink to="/contact">Contact Us</NavLink>

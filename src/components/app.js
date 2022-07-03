@@ -22,7 +22,7 @@ import Progressbar from "./pages/progressbar";
 import Tabs from "./pages/tabs";
 import { WalletProvider } from "../lib/contexts/walletContext";
 import { createGlobalStyle } from "styled-components";
-
+import "../index.css";
 const GlobalStyles = createGlobalStyle`
   :root {
     scroll-behavior: unset;

@@ -139,13 +139,38 @@ export default class PostService {
       const signer = provider.getSigner();
     } catch (error) {}
   }
-  async buyNft(tokenId, minBid, expDays) {
+  async buyNft(itemId, priceValue) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      let price = ethers.utils.parseUnits(priceValue.toString(), "ether");
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.createMarketSale(
+        process.env.REACT_APP_NFT_ADDRESS,
+        itemId,
+        { value: price }
+      );
+      const transaction = await marketContract.createMarketSale(
+        process.env.REACT_APP_NFT_ADDRESS,
+        itemId,
+        {
+          value: price,
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+      let tx = await transaction.wait();
+      return { success: true, txhash: tx.transactionHash };
+    } catch (error) {
+      return Promise.reject(error.data.message);
+    }
   }
   async auctionNft(tokenId, minBid, expDays, oldItem = false) {
     try {
@@ -191,13 +216,32 @@ export default class PostService {
       return Promise.reject(error.data.message);
     }
   }
-  async bidNft(tokenId, minBid, expDays) {
+  async bidNft(itemId, bidValue) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
+      let contract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      const _bidValue = ethers.utils.parseUnits(bidValue, "ether");
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await contract.estimateGas.createBid(itemId, {
+        value: _bidValue,
+      });
+      let transaction = await contract.createBid(itemId, {
+        value: _bidValue,
+        gasLimit: estimate_gas,
+        gasPrice: gas_price,
+      });
+      let tx = await transaction.wait();
+      return { txHash: tx.transactionHash };
+    } catch (error) {
+      return Promise.reject(error.data.message);
+    }
   }
   async settleAuction(tokenId, minBid, expDays) {
     try {
@@ -207,36 +251,132 @@ export default class PostService {
       const signer = provider.getSigner();
     } catch (error) {}
   }
-  async offerNft(tokenId, minBid, expDays) {
+  async offerNft(tokenId, priceValue) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
+
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      let price = ethers.utils.parseUnits(priceValue.toString(), "ether");
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.createoffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        { value: price }
+      );
+      const transaction = await marketContract.createoffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        {
+          value: price,
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+
+      let tx = await transaction.wait();
+      return tx.transactionHash;
+    } catch (error) {
+      return Promise.reject(error.data.message);
+    }
+  }
+  async deleteOffer(tokenId, index) {
+    try {
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.declineOffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        index
+      );
+      console.log(estimate_gas.toNumber());
+      let transaction = await marketContract.declineOffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        index,
+        {
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+      let tx = await transaction.wait();
+      return { txHash: tx.transactionHash };
     } catch (error) {}
   }
-  async deleteOffer(tokenId, minBid, expDays) {
+  async deleteAllOffers(tokenId) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.declineAllOffers(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId
+      );
+      let transaction = await marketContract.declineAllOffers(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        {
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+      let tx = await transaction.wait();
+      return { txHash: tx.transactionHash };
+    } catch (error) {
+      return Promise.reject(error.data.message);
+    }
   }
-  async deleteAllOffers(tokenId, minBid, expDays) {
+  async acceptOffer(tokenId, index) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
-  }
-  async acceptOffer(tokenId, minBid, expDays) {
-    try {
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      await this.approveContract();
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await marketContract.estimateGas.acceptOffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        index
+      );
+      console.log(estimate_gas.toNumber());
+      let transaction = await marketContract.acceptOffer(
+        process.env.REACT_APP_NFT_ADDRESS,
+        tokenId,
+        index,
+        {
+          gasLimit: estimate_gas,
+          gasPrice: gas_price,
+        }
+      );
+      let tx = await transaction.wait();
+      return { txHash: tx.transactionHash };
     } catch (error) {}
   }
   async giveawayNFT(tokenId, minBid, expDays) {

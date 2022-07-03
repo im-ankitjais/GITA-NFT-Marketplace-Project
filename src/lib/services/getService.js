@@ -30,9 +30,56 @@ export default class GetService {
   async getNftsOnSale() {}
   async getNftsOnAuction() {}
   async getNftsOnOffer() {}
-  async getNftsByTokenId() {}
+  async getNftsByTokenId(tokenId) {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(
+        process.env.REACT_APP_POLYGON_RPC_URL
+      );
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        provider
+      );
+      const data = await marketContract.fetchItemByTokenId(tokenId);
+      const nft = await this.parseNftData(data[0]);
+      return nft;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
   async getNftsByItemId() {}
+  async getOffersOnNft(tokenId) {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(
+        process.env.REACT_APP_POLYGON_RPC_URL
+      );
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        provider
+      );
 
+      const offersData = await marketContract.getOffers(tokenId);
+      const offers = await Promise.all(
+        offersData?.map(async (i, index) => {
+          let price = ethers.utils.formatUnits(i.price.toString(), "ether");
+          let offer = {
+            offerId: index,
+            from: i.from,
+            tokenId: i.tokenid.toNumber(),
+            price: price,
+          };
+          return offer;
+        })
+      );
+      let filteredOffers = offers.filter((offer) => {
+        return offer.tokenId !== 0;
+      });
+      return filteredOffers;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
   async getNftsOwned() {}
   async getNftsSelling() {}
 

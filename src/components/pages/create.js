@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
 import PostService from "../../lib/services/postService";
 import { navigate } from "@reach/router";
+import { LoaderContext } from "../../lib/contexts/loaderContext";
+import Loader from "../components/Loader";
 const GlobalStyles = createGlobalStyle`
+
   header#myHeader.navbar.sticky.white {
     background: #403f83;
     border-bottom: solid 1px #403f83;
@@ -38,6 +41,7 @@ const GlobalStyles = createGlobalStyle`
 `;
 const _postService = new PostService();
 const Createpage = () => {
+  const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const [file, setFile] = useState({
     name: "",
     url: "",
@@ -52,13 +56,14 @@ const Createpage = () => {
   });
   const fileChange = async (e) => {
     try {
+      setLoaderContext({ ...loaderContext, loading: true });
       var selectedFile = e.target.files[0];
-      console.log(selectedFile);
       let url = await _postService.uploadImage(selectedFile);
       setFile({
         name: selectedFile.name,
         url: url,
       });
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
     }
@@ -66,6 +71,7 @@ const Createpage = () => {
   const createNFT = async (e) => {
     e.preventDefault();
     try {
+      setLoaderContext({ ...loaderContext, loading: true });
       let metaURL = await _postService.uploadMeta(
         formData.name,
         formData.description,
@@ -81,6 +87,7 @@ const Createpage = () => {
           formData.duration
         );
       }
+      setLoaderContext({ ...loaderContext, loading: false });
       navigate("/explore");
     } catch (error) {
       console.log(error);
@@ -89,7 +96,7 @@ const Createpage = () => {
   return (
     <div>
       <GlobalStyles />
-
+      {loaderContext.loading && <Loader />}
       <section
         className="jumbotron breadcumb no-bg"
         style={{

@@ -15,3 +15,17 @@ code {
   padding: 6px 10px !important;
   border: solid 2px#FF343F !important;
 }
+.loader_container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  position:fixed;
+  /* width:100%; */
+  /* left:0;right:0;top:0;bottom:0; */
+  background-color: rgba(247, 216, 216, 0.7);
+  /* background-color: #fff; */
+  z-index:100;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SliderMain from "../components/SliderMain";
 import FeatureBox from "../components/FeatureBox";
 import Catgor from "../components/Catgor";
@@ -6,27 +6,33 @@ import Footer from "../components/footer";
 import GetService from "../../lib/services/getService";
 import { navigate } from "@reach/router";
 import StyledNftCard from "../components/NftCard";
+import { LoaderContext } from "../../lib/contexts/loaderContext";
+import Loader from "../components/Loader";
 const _getService = new GetService();
 const Home = () => {
+  const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const [latestNfts, setLatestNfts] = useState([]);
   useEffect(() => {
     getLatestNfts();
   }, []);
   const getLatestNfts = async () => {
     try {
+      setLoaderContext({ ...loaderContext, loading: true });
       let loggedWallet = localStorage.getItem("wallet");
       if (loggedWallet === undefined || loggedWallet === null) {
         navigate("/explore");
         return;
       }
-      let resp = await _getService.getLatestNfts(4);
+      let resp = await _getService.getLatestNfts(6);
       setLatestNfts(resp);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
     }
   };
   return (
     <div>
+      {loaderContext.loading && <Loader />}
       <section
         className="jumbotron breadcumb no-bg h-vh"
         style={{ backgroundImage: `url(${"./img/bg-shape-1.jpg"})` }}
@@ -48,7 +54,7 @@ const Home = () => {
           </div>
           <div className="col-lg-12">
             <div className="row">
-              {latestNfts?.map((nft, index) => (
+              {latestNfts?.slice(0, 4).map((nft, index) => (
                 <div
                   key={index}
                   className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4"

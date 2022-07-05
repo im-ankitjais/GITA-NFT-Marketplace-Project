@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
 import GetService from "../../lib/services/getService";
 import NftCard from "../components/NftCard";
 import { useLocation, navigate } from "@reach/router";
 import { parse } from "query-string";
-
+import { LoaderContext } from "../../lib/contexts/loaderContext";
+import Loader from "../components/Loader";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -24,6 +25,7 @@ const GlobalStyles = createGlobalStyle`
 `;
 const _getService = new GetService();
 const Profile = () => {
+  const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const location = useLocation();
   const [tab, setTab] = useState(0);
   const [ownedNfts, setOwnedNfts] = useState([]);
@@ -31,7 +33,6 @@ const Profile = () => {
   const [profileAddress, setProfileAddress] = useState(null);
   useEffect(() => {
     const searchParams = parse(location.search);
-    console.log(searchParams);
     if (searchParams.address === undefined || searchParams.address === "") {
       navigate("/explore");
       return;
@@ -51,10 +52,12 @@ const Profile = () => {
   }, [profileAddress]);
   const getProfileNfts = async () => {
     try {
+      setLoaderContext({ ...loaderContext, loading: true });
       let respOwned = await _getService.getNftsOwned(profileAddress);
       let respSell = await _getService.getNftsSelling(profileAddress);
       setOwnedNfts(respOwned);
       setOnSellNfts(respSell);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +66,7 @@ const Profile = () => {
   return (
     <div>
       <GlobalStyles />
-
+      {loaderContext.loading && <Loader />}
       <section
         id="profile_banner"
         className="jumbotron breadcumb no-bg"

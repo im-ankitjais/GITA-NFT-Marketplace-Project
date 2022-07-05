@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import { Router, Location, Redirect } from "@reach/router";
 import ScrollToTopBtn from "./menu/ScrollToTop";
 import Header from "./menu/header";
@@ -13,14 +13,8 @@ import Works from "./pages/works";
 import News from "./pages/news";
 import Create from "./pages/create";
 import Contact from "./pages/contact";
-import ElegantIcons from "./pages/elegantIcons";
-import EtlineIcons from "./pages/etlineIcons";
-import FontAwesomeIcons from "./pages/fontAwesomeIcons";
-import Accordion from "./pages/accordion";
-import Alerts from "./pages/alerts";
-import Progressbar from "./pages/progressbar";
-import Tabs from "./pages/tabs";
 import { WalletProvider } from "../lib/contexts/walletContext";
+import { LoaderProvider } from "../lib/contexts/loaderContext";
 import { createGlobalStyle } from "styled-components";
 import "../index.css";
 const GlobalStyles = createGlobalStyle`
@@ -46,37 +40,33 @@ const PosedRouter = ({ children }) => (
   </Location>
 );
 
-const app = () => (
-  <div className="wraper">
-    <GlobalStyles />
-    <WalletProvider>
-      <Header />
-      <PosedRouter>
-        <ScrollTop path="/">
-          <Home exact path="/">
-            <Redirect to="/home" />
-          </Home>
-          <Explore path="/explore" />
-          <Helpcenter path="/helpcenter" />
-          <MyProfile path="/my-profile" />
-          <NFT path="/nft" />
-          <Profile path="/profile" />
-          <Works path="/works" />
-          <News path="/news" />
-          <Create path="/create" />
-          <Contact path="/contact" />
-
-          <ElegantIcons path="/elegantIcons" />
-          <EtlineIcons path="/etlineIcons" />
-          <FontAwesomeIcons path="/fontAwesomeIcons" />
-          <Accordion path="/accordion" />
-          <Alerts path="/alerts" />
-          <Progressbar path="/progressbar" />
-          <Tabs path="/tabs" />
-        </ScrollTop>
-      </PosedRouter>
-      <ScrollToTopBtn />
-    </WalletProvider>
-  </div>
-);
-export default app;
+const App = () => {
+  return (
+    <div className="wraper">
+      <GlobalStyles />
+      <WalletProvider>
+        <LoaderProvider>
+          <Header />
+          <PosedRouter>
+            <ScrollTop path="/">
+              <Home exact path="/">
+                <Redirect to="/home" />
+              </Home>
+              <Explore path="/explore" />
+              <Helpcenter path="/helpcenter" />
+              <MyProfile path="/my-profile" />
+              <NFT path="/nft" />
+              <Profile path="/profile" />
+              <Works path="/works" />
+              <News path="/news" />
+              <Create path="/create" />
+              <Contact path="/contact" />
+            </ScrollTop>
+          </PosedRouter>
+          <ScrollToTopBtn />
+        </LoaderProvider>
+      </WalletProvider>
+    </div>
+  );
+};
+export default App;

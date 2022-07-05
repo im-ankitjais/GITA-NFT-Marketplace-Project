@@ -4,7 +4,6 @@ import Web3 from "web3/dist/web3.min.js";
 export default class WalletService {
   async connectWallet() {
     try {
-      console.log("clicked");
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
       } else if (window.web3) {
@@ -39,7 +38,6 @@ export default class WalletService {
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
-      console.log(address);
       localStorage.setItem("wallet", address);
       return true;
     } catch (error) {

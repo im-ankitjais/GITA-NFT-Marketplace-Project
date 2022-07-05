@@ -30,7 +30,6 @@ const Header = function () {
   const [openMenu2, setOpenMenu2] = React.useState(false);
   const [openMenu3, setOpenMenu3] = React.useState(false);
   const [walletContext, setWalletContext] = useContext(WalletContext);
-  console.log(walletContext);
   const handleBtnClick = () => {
     setOpenMenu(!openMenu);
   };

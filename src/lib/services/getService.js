@@ -21,7 +21,6 @@ export default class GetService {
           return this.parseNftData(i);
         })
       );
-      console.log("Market Items", nfts);
       return nfts;
     } catch (error) {
       return this.returnError(error);
@@ -91,13 +90,11 @@ export default class GetService {
         provider
       );
       const data = await marketContract.fetchLatestNfts(num);
-      console.log(data);
       const nfts = await Promise.all(
         data?.map(async (i) => {
           return this.parseNftData(i);
         })
       );
-      console.log(nfts);
       return nfts;
     } catch (error) {
       return this.returnError(error);
@@ -157,7 +154,6 @@ export default class GetService {
   async getContractFeeRecipient() {}
 
   async parseNftData(item) {
-    console.log(item);
     const provider = new ethers.providers.JsonRpcProvider(
       process.env.REACT_APP_POLYGON_RPC_URL
     );
@@ -194,7 +190,6 @@ export default class GetService {
       description: meta.data.description,
       image: meta.data.image,
     };
-    console.log(NFTData);
     return NFTData;
   }
 

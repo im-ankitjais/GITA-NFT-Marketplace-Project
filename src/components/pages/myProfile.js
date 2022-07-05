@@ -7,6 +7,8 @@ import { WalletContext } from "../../lib/contexts/walletContext";
 import { navigate } from "@reach/router";
 import GetService from "../../lib/services/getService";
 import OwnedCard from "../components/Cards/OwnedCard";
+import { LoaderContext } from "../../lib/contexts/loaderContext";
+import Loader from "../components/Loader";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -25,6 +27,7 @@ const GlobalStyles = createGlobalStyle`
 `;
 const _getService = new GetService();
 const MyProfile = () => {
+  const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const [tab, setTab] = useState(0);
   const [ownedNfts, setOwnedNfts] = useState(null);
   const [onSellNfts, setOnSellNfts] = useState(null);
@@ -38,6 +41,7 @@ const MyProfile = () => {
   }, []);
   const getProfileNfts = async () => {
     try {
+      setLoaderContext({ ...loaderContext, loading: true });
       let loggedWallet = localStorage.getItem("wallet");
       if (loggedWallet === undefined || loggedWallet === null) {
         navigate("/explore");
@@ -47,6 +51,7 @@ const MyProfile = () => {
       let respSell = await _getService.getNftsSelling(loggedWallet);
       setOwnedNfts(respOwned);
       setOnSellNfts(respSell);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
     }
@@ -54,7 +59,7 @@ const MyProfile = () => {
   return (
     <div>
       <GlobalStyles />
-
+      {loaderContext.loading && <Loader />}
       <section
         id="profile_banner"
         className="jumbotron breadcumb no-bg"

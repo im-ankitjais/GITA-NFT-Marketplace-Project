@@ -80,8 +80,54 @@ export default class GetService {
       return this.returnError(error);
     }
   }
-  async getNftsOwned() {}
-  async getNftsSelling() {}
+  async getNftsOwned() {
+    try {
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      const data = await marketContract.fetchItemsOwnByAddress(
+        process.env.REACT_APP_NFT_ADDRESS
+      );
+      const nfts = await Promise.all(
+        data?.map(async (i) => {
+          return this.parseNftData(i);
+        })
+      );
+      return nfts;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
+  async getNftsSelling() {
+    try {
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        signer
+      );
+      const data = await marketContract.fetchItemsOwnByAddress(
+        process.env.REACT_APP_NFT_ADDRESS
+      );
+      const nfts = await Promise.all(
+        data?.map(async (i) => {
+          return this.parseNftData(i);
+        })
+      );
+      return nfts;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
 
   async getContractFee() {}
   async getTokenCreator() {}

@@ -190,7 +190,7 @@ const Header = function () {
                               Author
                             </NavLink>
                             <NavLink
-                              to="/create2"
+                              to="/create"
                               onClick={() => btn_icon(!showmenu)}
                             >
                               Create NFT
@@ -328,7 +328,7 @@ const Header = function () {
                         <div className="item-dropdown">
                           <div className="dropdown" onClick={closeMenu2}>
                             <NavLink to="/Author">Author</NavLink>
-                            <NavLink to="/create2">Create NFT</NavLink>
+                            <NavLink to="/create">Create NFT</NavLink>
                             <NavLink to="/news">News</NavLink>
                             <NavLink to="/works">Gallery</NavLink>
                             <NavLink to="/contact">Contact Us</NavLink>

@@ -92,18 +92,6 @@
         }
         delete offers[tokenId];
     }
-//   function updateOwner(address nftContract, uint256 tokenId) public {
-//     if(tokenIdToItemId[tokenId].exist == true){
-//       uint itemid = tokenIdToItemId[tokenId].itemId;
-//       if(idToMarketItem[itemid].toMarket == false){
-//         if(idToMarketItem[itemid].currentOwner != IERC721(nftContract).ownerOf(tokenId)){
-          
-//           idToMarketItem[itemid].currentOwner = payable(IERC721(nftContract).ownerOf(tokenId));
-//         }
-//       }
-//     }
-//   }
-
   function createoffer(address nftaddress, uint tokenid) public payable {
     require(IERC721(nftaddress).ownerOf(tokenid) != address(0), "Not Found");
     if(tokenIdToItemId[tokenid].exist == true){
@@ -291,7 +279,6 @@
     uint tokenId = idToMarketItem[itemId].tokenId;
     require(idToMarketItem[itemId].on_auction == false, "Giveaway not Possible during auction.");
     require(idToMarketItem[itemId].currentOwner == msg.sender, "Not Authorized");
-    // require(idToMarketItem[itemId].toMarket == true, "Contract not authorized for giveaway");
     require(MCNFT(nftContract).isApprovedForAll(msg.sender, address(this)) == true, "Contract not Approved");
     idToMarketItem[itemId].previousOwner = idToMarketItem[itemId].currentOwner;
     idToMarketItem[itemId].currentOwner = payable(giveawayAddress);
@@ -514,19 +501,18 @@
     }
     return items;
   }
-
-  function fetchItemsOwnByAddress(address nftaddress) public view returns (MarketItem[] memory) {
+  function fetchItemsOwnByAddress(address nftaddress, address wallet) public view returns (MarketItem[] memory) {
     uint totalItemCount = _itemIds.current();
     uint itemCount = 0;
     uint currentIndex = 0;
     for (uint i = 0; i < totalItemCount; i++) {
-      if (IERC721(nftaddress).ownerOf(idToMarketItem[i + 1].tokenId) == msg.sender) {
+      if (IERC721(nftaddress).ownerOf(idToMarketItem[i + 1].tokenId) == wallet) {
         itemCount += 1;
       }
     }
     MarketItem[] memory items = new MarketItem[](itemCount);
     for (uint i = 0; i < totalItemCount; i++) {
-      if (IERC721(nftaddress).ownerOf(idToMarketItem[i + 1].tokenId) == msg.sender) {
+      if (IERC721(nftaddress).ownerOf(idToMarketItem[i + 1].tokenId) == wallet) {
         uint currentId = i + 1;
         MarketItem storage currentItem = idToMarketItem[currentId];
         items[currentIndex] = currentItem;
@@ -535,55 +521,36 @@
     }
     return items;
   }
-
-//   function fetchItemsOnSaleByAddress() public view returns (MarketItem[] memory) {
-//     uint totalItemCount = _itemIds.current();
-//     uint itemCount = 0;
-//     uint currentIndex = 0;
-//     for (uint i = 0; i < totalItemCount; i++) {
-//       if (idToMarketItem[i + 1].currentOwner == msg.sender && idToMarketItem[i + 1].toMarket == true) {
-//         itemCount += 1;
-//       }
-//     }
-//     MarketItem[] memory items = new MarketItem[](itemCount);
-//     for (uint i = 0; i < totalItemCount; i++) {
-//       if (idToMarketItem[i + 1].currentOwner == msg.sender  && idToMarketItem[i + 1].toMarket == true) {
-//         uint currentId = i + 1;
-//         MarketItem storage currentItem = idToMarketItem[currentId];
-//         items[currentIndex] = currentItem;
-//         currentIndex += 1;
-//       }
-//     }
-//     return items;
-//   }
-//   function getOwners() public view returns (address[] memory) {
-//     uint totalItemCount = _itemIds.current();
-//     uint currentIndex = 0;
-//     address[] memory items = new address[](totalItemCount);
-//     for (uint i = 0; i < totalItemCount; i++) {
-//       uint currentId = i + 1;
-//       items[currentIndex] = idToMarketItem[currentId].currentOwner;
-//       currentIndex += 1;
-//     }
-//     return items;
-//   }
-//   function getItemsInfo() public view returns (Items[] memory) {
-//     uint totalItemCount = _itemIds.current();
-//     uint currentIndex = 0;
-//     Items[] memory items = new Items[](totalItemCount);
-//     for (uint i = 0; i < totalItemCount; i++) {
-//       uint currentId = i + 1;
-//       items[currentIndex] = Items(
-//         idToMarketItem[currentId].itemId,
-//         idToMarketItem[currentId].tokenId,
-//         idToMarketItem[currentId].currentOwner,
-//         idToMarketItem[currentId].numberOfTransfers,
-//         idToMarketItem[currentId].toMarket,
-//         idToMarketItem[currentId].on_sell,
-//         idToMarketItem[currentId].on_auction
-//       );
-//       currentIndex += 1;
-//     }
-//     return items;
-//   }
+  function fetchItemsOnSaleByAddress(address wallet) public view returns (MarketItem[] memory) {
+    uint totalItemCount = _itemIds.current();
+    uint itemCount = 0;
+    uint currentIndex = 0;
+    for (uint i = 0; i < totalItemCount; i++) {
+      if (idToMarketItem[i + 1].currentOwner == wallet && idToMarketItem[i + 1].toMarket == true) {
+        itemCount += 1;
+      }
+    }
+    MarketItem[] memory items = new MarketItem[](itemCount);
+    for (uint i = 0; i < totalItemCount; i++) {
+      if (idToMarketItem[i + 1].currentOwner == wallet && idToMarketItem[i + 1].toMarket == true) {
+        uint currentId = i + 1;
+        MarketItem storage currentItem = idToMarketItem[currentId];
+        items[currentIndex] = currentItem;
+        currentIndex += 1;
+      }
+    }
+    return items;
+  }
+  function fetchLatestNfts(uint num) public view returns (MarketItem[] memory) {
+    uint totalItemCount = _itemIds.current();
+    uint currentIndex = 0;
+    MarketItem[] memory items = new MarketItem[](num);
+    for (uint i = totalItemCount; i > 0; i--) {
+        uint currentId = i;
+        MarketItem storage currentItem = idToMarketItem[currentId];
+        items[currentIndex] = currentItem;
+        currentIndex += 1;
+    }
+    return items;
+  }
 }

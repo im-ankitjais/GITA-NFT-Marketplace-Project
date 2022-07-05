@@ -1,9 +1,12 @@
-import React from "react";
-import ColumnZero from '../components/ColumnZero';
-import ColumnZeroTwo from '../components/ColumnZeroTwo';
-import Footer from '../components/footer';
-import { createGlobalStyle } from 'styled-components';
-
+import React, { useState, useEffect, useContext } from "react";
+import ColumnZero from "../components/ColumnZero";
+import ColumnZeroTwo from "../components/ColumnZeroTwo";
+import Footer from "../components/footer";
+import { createGlobalStyle } from "styled-components";
+import { WalletContext } from "../../lib/contexts/walletContext";
+import { navigate } from "@reach/router";
+import GetService from "../../lib/services/getService";
+import OwnedCard from "../components/Cards/OwnedCard";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -20,85 +23,114 @@ const GlobalStyles = createGlobalStyle`
     }
   }
 `;
+const _getService = new GetService();
+const MyProfile = () => {
+  const [tab, setTab] = useState(0);
+  const [ownedNfts, setOwnedNfts] = useState(null);
+  const [onSellNfts, setOnSellNfts] = useState(null);
+  // const [walletContext, setWalletContext] = useContext(WalletContext);
+  useEffect(() => {
+    // if (walletContext.loggedIn === false) {
+    //   navigate("/explore");
+    // } else {
+    getProfileNfts();
+    // }
+  }, []);
+  const getProfileNfts = async () => {
+    try {
+      let respOwned = await _getService.getNftsSelling();
+      console.log("respOwned", respOwned);
+      setOwnedNfts(respOwned);
+      // let respSell = await _getService.getNftsOwned();
+      // console.log(respSell);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <div>
+      <GlobalStyles />
 
-const MyProfile= function() {
-const [openMenu, setOpenMenu] = React.useState(true);
-const [openMenu1, setOpenMenu1] = React.useState(false);
-const handleBtnClick = () => {
-  setOpenMenu(!openMenu);
-  setOpenMenu1(false);
-  document.getElementById("Mainbtn").classList.add("active");
-  document.getElementById("Mainbtn1").classList.remove("active");
-};
-const handleBtnClick1 = () => {
-  setOpenMenu1(!openMenu1);
-  setOpenMenu(false);
-  document.getElementById("Mainbtn1").classList.add("active");
-  document.getElementById("Mainbtn").classList.remove("active");
-};
+      <section
+        id="profile_banner"
+        className="jumbotron breadcumb no-bg"
+        style={{ backgroundImage: `url(${"./img/background/4.jpg"})` }}
+      >
+        <div className="mainbreadcumb"></div>
+      </section>
 
+      <section className="container d_coll no-top no-bottom">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="d_profile">
+              <div className="profile_avatar">
+                <div className="d_profile_img">
+                  <img src="./img/author/author-1.jpg" alt="" />
+                  <i className="fa fa-check"></i>
+                </div>
 
-
-return (
-<div>
-<GlobalStyles/>
-
-  <section id='profile_banner' className='jumbotron breadcumb no-bg' style={{backgroundImage: `url(${'./img/background/4.jpg'})`}}>
-    <div className='mainbreadcumb'>
-    </div>
-  </section>
-
-  <section className='container d_coll no-top no-bottom'>
-    <div className='row'>
-      <div className="col-md-12">
-         <div className="d_profile">
-                  <div className="profile_avatar">
-                      <div className="d_profile_img">
-                          <img src="./img/author/author-1.jpg" alt=""/>
-                          <i className="fa fa-check"></i>
-                      </div>
-                      
-                      <div className="profile_name">
-                          <h4>
-                              Abstraction                                                
-                              <div className="clearfix"></div>
-                              <span id="wallet" className="profile_wallet">DdzFFzCqrhshMSxb9oW3mRo4MJrQkusV3fGFSTwaiu4wPBqMryA9DYVJCkW9n7twCffG5f5wX2sSkoDXGiZB1HPa7K7f865Kk4LqnrME</span>
-                              <button id="btn_copy" title="Copy Text">Copy</button>
-                          </h4>
-                      </div>
-                  </div>
-
-          </div>
-      </div>
-    </div>
-  </section>
-
-  <section className='container no-top'>
-        <div className='row'>
-          <div className='col-lg-12'>
-              <div className="items_filter">
-                <ul className="de_nav">
-                    <li id='Mainbtn' className="active"><span onClick={handleBtnClick}>On Sale</span></li>
-                    <li id='Mainbtn1' className=""><span onClick={handleBtnClick1}>Owned</span></li>
-                </ul>
+                <div className="profile_name">
+                  <h4>
+                    <div className="clearfix"></div>
+                    <span id="wallet" className="profile_wallet">
+                      {localStorage.getItem("wallet")}
+                    </span>
+                    <button id="btn_copy" title="Copy Text">
+                      Copy
+                    </button>
+                  </h4>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      {openMenu && (  
-        <div id='zero1' className='onStep fadeIn'>
-         <ColumnZero/>
-        </div>
-      )}
-      {openMenu1 && ( 
-        <div id='zero2' className='onStep fadeIn'>
-         <ColumnZeroTwo/>
-        </div>
-      )}
       </section>
 
+      <section className="container no-top">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="items_filter">
+              <ul className="de_nav">
+                <li id="Mainbtn" className={tab === 0 ? "active" : ""}>
+                  <span onClick={() => setTab(0)}>On Sale</span>
+                </li>
+                <li id="Mainbtn1" className={tab === 1 ? "active" : ""}>
+                  <span onClick={() => setTab(1)}>Owned</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        {tab === 0 && (
+          <div id="zero1" className="onStep fadeIn">
+            <div className="row">
+              {/* {ownedNfts?.map((nft, index) => (
+                <div
+                  key={index}
+                  className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
+                >
+                  <OwnedCard nft={nft} />
+                </div>
+              ))} */}
+            </div>
+          </div>
+        )}
+        {tab === 1 && (
+          <div id="zero2" className="onStep fadeIn">
+            {ownedNfts?.map((nft, index) => (
+              <div
+                key={index}
+                className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
+              >
+                <OwnedCard nft={nft} />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
-  <Footer />
-</div>
-);
-}
+      <Footer />
+    </div>
+  );
+};
 export default MyProfile;

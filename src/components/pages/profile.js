@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
-import ColumnZero from "../components/ColumnZero";
-import ColumnZeroTwo from "../components/ColumnZeroTwo";
+import React, { useState, useEffect } from "react";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
-import { WalletContext } from "../../lib/contexts/walletContext";
-import { navigate } from "@reach/router";
 import GetService from "../../lib/services/getService";
-import OwnedCard from "../components/Cards/OwnedCard";
+import NftCard from "../components/NftCard";
+import { useLocation, navigate } from "@reach/router";
+import { parse } from "query-string";
+
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -24,33 +23,43 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 const _getService = new GetService();
-const MyProfile = () => {
+const Profile = () => {
+  const location = useLocation();
   const [tab, setTab] = useState(0);
-  const [ownedNfts, setOwnedNfts] = useState(null);
-  const [onSellNfts, setOnSellNfts] = useState(null);
-  // const [walletContext, setWalletContext] = useContext(WalletContext);
+  const [ownedNfts, setOwnedNfts] = useState([]);
+  const [onSellNfts, setOnSellNfts] = useState([]);
+  const [profileAddress, setProfileAddress] = useState(null);
   useEffect(() => {
-    // if (walletContext.loggedIn === false) {
-    //   navigate("/explore");
-    // } else {
-    getProfileNfts();
-    // }
+    const searchParams = parse(location.search);
+    console.log(searchParams);
+    if (searchParams.address === undefined || searchParams.address === "") {
+      navigate("/explore");
+      return;
+    }
+    setProfileAddress(searchParams.address);
   }, []);
+  useEffect(() => {
+    if (
+      profileAddress == undefined ||
+      profileAddress === null ||
+      profileAddress === ""
+    ) {
+      return;
+    } else {
+      getProfileNfts();
+    }
+  }, [profileAddress]);
   const getProfileNfts = async () => {
     try {
-      let loggedWallet = localStorage.getItem("wallet");
-      if (loggedWallet === undefined || loggedWallet === null) {
-        navigate("/explore");
-        return;
-      }
-      let respOwned = await _getService.getNftsOwned(loggedWallet);
-      let respSell = await _getService.getNftsSelling(loggedWallet);
+      let respOwned = await _getService.getNftsOwned(profileAddress);
+      let respSell = await _getService.getNftsSelling(profileAddress);
       setOwnedNfts(respOwned);
       setOnSellNfts(respSell);
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <div>
       <GlobalStyles />
@@ -58,31 +67,33 @@ const MyProfile = () => {
       <section
         id="profile_banner"
         className="jumbotron breadcumb no-bg"
-        style={{ backgroundImage: `url(${"./img/background/4.jpg"})` }}
+        style={{
+          backgroundImage: `url(${"./img/author_single/author_banner.jpg"})`,
+        }}
       >
         <div className="mainbreadcumb"></div>
       </section>
 
-      <section className="container d_coll no-top no-bottom">
+      <section className="container no-bottom">
         <div className="row">
           <div className="col-md-12">
-            <div className="d_profile">
-              <div className="profile_avatar">
-                <div className="d_profile_img">
-                  <img src="./img/author/author-1.jpg" alt="" />
+            <div className="d_profile de-flex">
+              <div className="de-flex-col">
+                <div className="profile_avatar">
+                  <img src="./img/author_single/author_thumbnail.jpg" alt="" />
                   <i className="fa fa-check"></i>
-                </div>
-
-                <div className="profile_name">
-                  <h4>
-                    <div className="clearfix"></div>
-                    <span id="wallet" className="profile_wallet">
-                      {localStorage.getItem("wallet")}
-                    </span>
-                    <button id="btn_copy" title="Copy Text">
-                      Copy
-                    </button>
-                  </h4>
+                  <div className="profile_name">
+                    <h4>
+                      Monica Lucas
+                      <span className="profile_username">@monicaaa</span>
+                      <span id="wallet" className="profile_wallet">
+                        {profileAddress}
+                      </span>
+                      <button id="btn_copy" title="Copy Text">
+                        Copy
+                      </button>
+                    </h4>
+                  </div>
                 </div>
               </div>
             </div>
@@ -94,7 +105,7 @@ const MyProfile = () => {
         <div className="row">
           <div className="col-lg-12">
             <div className="items_filter">
-              <ul className="de_nav">
+              <ul className="de_nav text-left">
                 <li id="Mainbtn" className={tab === 0 ? "active" : ""}>
                   <span onClick={() => setTab(0)}>On Sale</span>
                 </li>
@@ -113,7 +124,7 @@ const MyProfile = () => {
                   key={index}
                   className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
                 >
-                  <OwnedCard nft={nft} />
+                  <NftCard nft={nft} />
                 </div>
               ))}
             </div>
@@ -126,7 +137,7 @@ const MyProfile = () => {
                 key={index}
                 className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
               >
-                <OwnedCard nft={nft} />
+                <NftCard nft={nft} />
               </div>
             ))}
           </div>
@@ -137,4 +148,4 @@ const MyProfile = () => {
     </div>
   );
 };
-export default MyProfile;
+export default Profile;

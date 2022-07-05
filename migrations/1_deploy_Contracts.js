@@ -2,7 +2,7 @@ const NFT = artifacts.require("NFT");
 const Market = artifacts.require("Market");
 
 module.exports = async function (deployer, network, accounts) {
-  const _feeRcvr = "0x2d73C76cC478Eb5b8453E987635D2473589e17ce";
+  const _feeRcvr = "0x2BB06f26d1F0b20950AA93E69e15cE61d8F085AF";
 
   await deployer.deploy(Market);
   const market = await Market.deployed();

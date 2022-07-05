@@ -8,7 +8,7 @@ import Explore from "./pages/explore";
 import Helpcenter from "./pages/helpcenter";
 import MyProfile from "./pages/myProfile";
 import NFT from "./pages/nft";
-import Author from "./pages/Author";
+import Profile from "./pages/profile";
 import Works from "./pages/works";
 import News from "./pages/news";
 import Create from "./pages/create";
@@ -60,7 +60,7 @@ const app = () => (
           <Helpcenter path="/helpcenter" />
           <MyProfile path="/my-profile" />
           <NFT path="/nft" />
-          <Author path="/Author" />
+          <Profile path="/profile" />
           <Works path="/works" />
           <News path="/news" />
           <Create path="/create" />

@@ -70,6 +70,7 @@ const NftCardOwned = ({ nft, className }) => {
       </div>
       <div
         className="nc-content"
+        style={{ height: "150px" }}
         // onClick={() => {
         //   showDetail();
         // }}
@@ -85,8 +86,8 @@ const NftCardOwned = ({ nft, className }) => {
         {nft?.on_auction === true && nft?.hBid !== 0 && (
           <div className="nc-price">{`${calcPriceString(nft?.hBid, 3)}`}</div>
         )}
-        <div className="nc-action">
-          {nft?.toMarket === false && (
+        {nft?.toMarket === false && (
+          <div className="nc-action">
             <>
               <span className="action-button">Giveaway</span>
               <div
@@ -115,8 +116,8 @@ const NftCardOwned = ({ nft, className }) => {
                 </OverlayTrigger>
               </div>
             </>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

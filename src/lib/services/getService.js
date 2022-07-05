@@ -80,19 +80,42 @@ export default class GetService {
       return this.returnError(error);
     }
   }
-  async getNftsOwned() {
+  async getLatestNfts(num) {
     try {
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
+      const provider = new ethers.providers.JsonRpcProvider(
+        process.env.REACT_APP_POLYGON_RPC_URL
+      );
       const marketContract = new ethers.Contract(
         process.env.REACT_APP_MARKET_ADDRESS,
         Market.abi,
-        signer
+        provider
+      );
+      const data = await marketContract.fetchLatestNfts(num);
+      console.log(data);
+      const nfts = await Promise.all(
+        data?.map(async (i) => {
+          return this.parseNftData(i);
+        })
+      );
+      console.log(nfts);
+      return nfts;
+    } catch (error) {
+      return this.returnError(error);
+    }
+  }
+  async getNftsOwned(wallet_address) {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(
+        process.env.REACT_APP_POLYGON_RPC_URL
+      );
+      const marketContract = new ethers.Contract(
+        process.env.REACT_APP_MARKET_ADDRESS,
+        Market.abi,
+        provider
       );
       const data = await marketContract.fetchItemsOwnByAddress(
-        process.env.REACT_APP_NFT_ADDRESS
+        process.env.REACT_APP_NFT_ADDRESS,
+        wallet_address
       );
       const nfts = await Promise.all(
         data?.map(async (i) => {
@@ -104,19 +127,18 @@ export default class GetService {
       return this.returnError(error);
     }
   }
-  async getNftsSelling() {
+  async getNftsSelling(wallet_address) {
     try {
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
+      const provider = new ethers.providers.JsonRpcProvider(
+        process.env.REACT_APP_POLYGON_RPC_URL
+      );
       const marketContract = new ethers.Contract(
         process.env.REACT_APP_MARKET_ADDRESS,
         Market.abi,
-        signer
+        provider
       );
-      const data = await marketContract.fetchItemsOwnByAddress(
-        process.env.REACT_APP_NFT_ADDRESS
+      const data = await marketContract.fetchItemsOnSaleByAddress(
+        wallet_address
       );
       const nfts = await Promise.all(
         data?.map(async (i) => {
@@ -135,6 +157,7 @@ export default class GetService {
   async getContractFeeRecipient() {}
 
   async parseNftData(item) {
+    console.log(item);
     const provider = new ethers.providers.JsonRpcProvider(
       process.env.REACT_APP_POLYGON_RPC_URL
     );
@@ -171,6 +194,7 @@ export default class GetService {
       description: meta.data.description,
       image: meta.data.image,
     };
+    console.log(NFTData);
     return NFTData;
   }
 

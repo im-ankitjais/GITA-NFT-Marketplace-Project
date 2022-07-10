@@ -4,6 +4,7 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 import NFT from "../abi/NFT.json";
 import Market from "../abi/Market.json";
 import axios from "axios";
+import Web3 from "web3/dist/web3.min.js";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -379,13 +380,36 @@ export default class PostService {
       return { txHash: tx.transactionHash };
     } catch (error) {}
   }
-  async giveawayNFT(tokenId, minBid, expDays) {
+  async giveawayNFT(from, to, tokenId) {
     try {
       const web3Modal = new Web3Modal();
       const connection = await web3Modal.connect();
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
-    } catch (error) {}
+      var web3 = new Web3(provider);
+      const nftContract = new ethers.Contract(
+        process.env.REACT_APP_NFT_ADDRESS,
+        NFT.abi,
+        signer
+      );
+      if (!web3.utils.isAddress(from)) throw "Not valid address.";
+      if (!web3.utils.isAddress(to)) throw "Not valid address.";
+      let gas_price = await this.getGasPrice();
+      let estimate_gas = await nftContract.estimateGas.transferFrom(
+        from,
+        to,
+        tokenId
+      );
+      console.log(estimate_gas.toNumber());
+      let transaction = await nftContract.transferFrom(from, to, tokenId, {
+        gasLimit: estimate_gas,
+        gasPrice: gas_price,
+      });
+      let tx = await transaction.wait();
+      return tx.transactionHash;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   async approveContract() {

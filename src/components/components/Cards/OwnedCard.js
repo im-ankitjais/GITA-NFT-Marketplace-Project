@@ -3,7 +3,7 @@ import { timeRemaining } from "../../../lib/services/timerService";
 import styled from "styled-components";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-const NftCardOwned = ({ nft, className }) => {
+const NftCardOwned = ({ nft, setGiveawayModal, className }) => {
   const [timer, setTimer] = useState({
     days: 0,
     hours: 0,
@@ -89,7 +89,19 @@ const NftCardOwned = ({ nft, className }) => {
         {nft?.toMarket === false && (
           <div className="nc-action">
             <>
-              <span className="action-button">Giveaway</span>
+              <span
+                className="action-button"
+                onClick={() => {
+                  setGiveawayModal({
+                    show: true,
+                    nft: nft,
+                    to: "",
+                    loading: false,
+                  });
+                }}
+              >
+                Giveaway
+              </span>
               <div
                 className="nc-q-icon"
                 onClick={(e) => {

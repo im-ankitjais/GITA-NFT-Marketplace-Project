@@ -1,0 +1,40 @@
+.cancel{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+.transaction_container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.submit_btn{
+    width: 100%;
+    display: block;
+    color: #fff !important;
+    background: #FF343F;
+    text-align: center;
+    border-radius: 30px;
+    letter-spacing: normal;
+    outline: 0;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 8px 40px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    line-height: 1.5;
+    transition: 0.5s;
+}
+.submit_btn:hover{
+    transform: scale(1.03);
+}
+.submit_btn_loader{
+    position: absolute;
+    right: 50px;
+    top: 5px;
+}

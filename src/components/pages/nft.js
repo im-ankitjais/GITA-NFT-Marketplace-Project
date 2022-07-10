@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Clock from "../components/Clock";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
@@ -8,7 +8,8 @@ import { useLocation, navigate } from "@reach/router";
 import { parse } from "query-string";
 import OffersTable from "../components/Table/OffersTable";
 import { timeRemaining } from "../../lib/services/timerService";
-
+import { LoaderContext } from "../../lib/contexts/loaderContext";
+import Loader from "../components/Loader";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -31,6 +32,7 @@ const _getService = new GetServices();
 const _postService = new PostServices();
 const Colection = () => {
   const location = useLocation();
+  const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const [nft, setNft] = useState(null);
   const [offers, setOffers] = useState([]);
   const [newBid, setNewBid] = useState({
@@ -59,9 +61,13 @@ const Colection = () => {
     let itv;
     if (nft !== null && nft.toMarket === false) {
       getOffersOnNft(nft.tokenId);
-    } else if (nft !== null && nft.on_auction === true) {
+    } else if (
+      nft !== null &&
+      nft.on_auction === true &&
+      timeRemaining(nft?.endDate) !== 0
+    ) {
       itv = setInterval(() => {
-        let resp = timeRemaining(nft?.endDate, 0);
+        let resp = timeRemaining(nft?.endDate);
         setTimer({
           days: resp.days,
           hours: resp.hours,
@@ -86,11 +92,12 @@ const Colection = () => {
   };
   const getNftDetail = async (tokenId) => {
     try {
-      console.log(tokenId);
+      setLoaderContext({ ...loaderContext, loading: true });
       let resp = await _getService.getNftsByTokenId(tokenId);
-      console.log(resp);
       setNft(resp);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
+      setLoaderContext({ ...loaderContext, loading: false });
       console.log(error);
     }
   };
@@ -144,6 +151,7 @@ const Colection = () => {
   return (
     <div>
       <GlobalStyles />
+      {loaderContext.loading && <Loader />}
 
       <section className="container">
         <div className="row mt-md-5 pt-md-4">

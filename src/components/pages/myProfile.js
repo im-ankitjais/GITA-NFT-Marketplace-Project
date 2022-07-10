@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import ColumnZero from "../components/ColumnZero";
-import ColumnZeroTwo from "../components/ColumnZeroTwo";
 import Footer from "../components/footer";
 import { createGlobalStyle } from "styled-components";
-import { WalletContext } from "../../lib/contexts/walletContext";
 import { navigate } from "@reach/router";
 import GetService from "../../lib/services/getService";
 import OwnedCard from "../components/Cards/OwnedCard";
 import { LoaderContext } from "../../lib/contexts/loaderContext";
 import Loader from "../components/Loader";
+import GiveawayModal from "../components/GiveawayModal";
+import PostService from "../../lib/services/postService";
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
     background: #fff;
@@ -26,18 +25,20 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 const _getService = new GetService();
+const _postService = new PostService();
 const MyProfile = () => {
   const [loaderContext, setLoaderContext] = useContext(LoaderContext);
   const [tab, setTab] = useState(0);
   const [ownedNfts, setOwnedNfts] = useState(null);
   const [onSellNfts, setOnSellNfts] = useState(null);
-  // const [walletContext, setWalletContext] = useContext(WalletContext);
+  const [giveawayModal, setGiveawayModal] = useState({
+    show: false,
+    nft: null,
+    to: "",
+    loading: false,
+  });
   useEffect(() => {
-    // if (walletContext.loggedIn === false) {
-    //   navigate("/explore");
-    // } else {
     getProfileNfts();
-    // }
   }, []);
   const getProfileNfts = async () => {
     try {
@@ -56,10 +57,45 @@ const MyProfile = () => {
       console.log(error);
     }
   };
+  const giveawaySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("goive");
+      setLoaderContext({ ...loaderContext, loading: true });
+      setGiveawayModal({
+        ...giveawayModal,
+        show: false,
+      });
+      if (giveawayModal.to === "") throw "Wallet Address Required.";
+      if (giveawayModal.nft === null) throw "Select NFT Again!";
+      await _postService.giveawayNFT(
+        localStorage.getItem("wallet"),
+        giveawayModal.to,
+        giveawayModal.nft.tokenId
+      );
+      setLoaderContext({ ...loaderContext, loading: false });
+    } catch (error) {
+      console.log("error");
+      setLoaderContext({ ...loaderContext, loading: false });
+      setGiveawayModal({
+        show: false,
+        nft: null,
+        to: "",
+        loading: false,
+      });
+    }
+  };
   return (
     <div>
       <GlobalStyles />
       {loaderContext.loading && <Loader />}
+      {giveawayModal.show && (
+        <GiveawayModal
+          giveawayModal={giveawayModal}
+          setGiveawayModal={setGiveawayModal}
+          giveawaySubmit={giveawaySubmit}
+        />
+      )}
       <section
         id="profile_banner"
         className="jumbotron breadcumb no-bg"
@@ -131,7 +167,7 @@ const MyProfile = () => {
                 key={index}
                 className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
               >
-                <OwnedCard nft={nft} />
+                <OwnedCard nft={nft} setGiveawayModal={setGiveawayModal} />
               </div>
             ))}
           </div>

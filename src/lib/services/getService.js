@@ -90,6 +90,7 @@ export default class GetService {
         provider
       );
       const data = await marketContract.fetchLatestNfts(num);
+      console.log(data);
       const nfts = await Promise.all(
         data?.map(async (i) => {
           return this.parseNftData(i);

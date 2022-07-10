@@ -2,7 +2,7 @@ import React from "react";
 const Loader = (props) => {
   const { width = "200px", height = "200px", fillColor = "#FAC036" } = props;
   return (
-    <div className="loader_container">
+    <div className="loader_container" style={{ zIndex: 1 }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         style={{

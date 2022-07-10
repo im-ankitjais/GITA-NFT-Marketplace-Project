@@ -18,12 +18,7 @@ const Home = () => {
   const getLatestNfts = async () => {
     try {
       setLoaderContext({ ...loaderContext, loading: true });
-      let loggedWallet = localStorage.getItem("wallet");
-      if (loggedWallet === undefined || loggedWallet === null) {
-        navigate("/explore");
-        return;
-      }
-      let resp = await _getService.getLatestNfts(6);
+      let resp = await _getService.getAllNfts();
       setLatestNfts(resp);
       setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
@@ -54,14 +49,17 @@ const Home = () => {
           </div>
           <div className="col-lg-12">
             <div className="row">
-              {latestNfts?.slice(0, 4).map((nft, index) => (
-                <div
-                  key={index}
-                  className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4"
-                >
-                  <StyledNftCard nft={nft} />
-                </div>
-              ))}
+              {latestNfts
+                ?.slice(-5, -1)
+                .reverse()
+                .map((nft, index) => (
+                  <div
+                    key={index}
+                    className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4"
+                  >
+                    <StyledNftCard nft={nft} />
+                  </div>
+                ))}
             </div>
           </div>
         </div>

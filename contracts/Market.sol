@@ -84,6 +84,22 @@
         uint highestBidAmount,
         bool toMarket
     );
+    function updateOwner(address nftContract, uint256 tokenId) public {
+    if(tokenIdToItemId[tokenId].exist == true){
+      uint itemid = tokenIdToItemId[tokenId].itemId;
+      if(idToMarketItem[itemid].toMarket == false){
+        if(idToMarketItem[itemid].currentOwner != IERC721(nftContract).ownerOf(tokenId)){
+          for(uint i=0; i<offers[tokenId].length; i++){
+            if(offers[tokenId][i].from != address(0)){
+              payable(offers[tokenId][i].from).transfer(offers[tokenId][i].price);
+            }
+          }
+          delete offers[tokenId];
+          idToMarketItem[itemid].currentOwner = payable(IERC721(nftContract).ownerOf(tokenId));
+        }
+      }
+    }
+  }
     function returnOffers(uint256 tokenId) private{
         for(uint i=0; i<offers[tokenId].length; i++){
             if(offers[tokenId][i].from != address(0)){

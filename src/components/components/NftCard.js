@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { timeRemaining } from "../../lib/services/timerService";
 import styled from "styled-components";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { navigate } from "@reach/router";
 
 const NftCard = ({ nft, className }) => {
   const [timer, setTimer] = useState({
@@ -12,9 +13,9 @@ const NftCard = ({ nft, className }) => {
   });
   useEffect(() => {
     let itv;
-    if (nft.on_auction === true && timeRemaining(nft?.endDate, 0) !== 0) {
+    if (nft.on_auction === true && timeRemaining(nft?.endDate) !== 0) {
       itv = setInterval(() => {
-        let resp = timeRemaining(nft?.endDate, 0);
+        let resp = timeRemaining(nft?.endDate);
         setTimer({
           days: resp.days,
           hours: resp.hours,
@@ -35,12 +36,6 @@ const NftCard = ({ nft, className }) => {
     if (type === 3) return `Last Bid: ${price}`;
     return price;
   };
-  // const showDetail = () => {
-  //   router.push({
-  //     pathname: "/nft",
-  //     query: { tokenid: nft.tokenid },
-  //   });
-  // };
 
   return (
     <div className={className}>
@@ -58,9 +53,9 @@ const NftCard = ({ nft, className }) => {
       )}
       <div
         className="nc-img"
-        // onClick={() => {
-        //   showDetail();
-        // }}
+        onClick={() => {
+          navigate(`/nft?tokenid=${nft.tokenId}`);
+        }}
       >
         <img
           alt="nft image"
@@ -70,9 +65,9 @@ const NftCard = ({ nft, className }) => {
       </div>
       <div
         className="nc-content"
-        // onClick={() => {
-        //   showDetail();
-        // }}
+        onClick={() => {
+          navigate(`/nft?tokenid=${nft.tokenId}`);
+        }}
       >
         <h4>{nft.name ? nft.name : "Undefined"}</h4>
         <div className="nc-desc">{nft?.description}</div>

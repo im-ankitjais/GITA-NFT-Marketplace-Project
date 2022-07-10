@@ -4,7 +4,7 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-contract Market {
+contract NFTMarket {
     function updateOwner(address nftContract, uint256 tokenId) public {}
 }
 contract NFT is ERC721URIStorage {
@@ -88,7 +88,7 @@ contract NFT is ERC721URIStorage {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         _transfer(from, to, tokenId);
-        Market(contractAddress).updateOwner(address(this), tokenId);
+        NFTMarket(contractAddress).updateOwner(address(this), tokenId);
     }
     function approve_contract() public {
         setApprovalForAll(contractAddress, true);

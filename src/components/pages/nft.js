@@ -113,32 +113,40 @@ const Colection = () => {
   const buyNft = async (e) => {
     try {
       e.preventDefault();
+      setLoaderContext({ ...loaderContext, loading: true });
       await _postService.buyNft(nft.itemId, nft.price);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
+      setLoaderContext({ ...loaderContext, loading: false });
     }
   };
   const confirmBid = async (e) => {
     try {
       e.preventDefault();
+      setLoaderContext({ ...loaderContext, loading: true });
       const minPossibleBid = getMinBid();
-
       if (!newBid.value) throw "Please Enter Your Bid Amount.";
       if (isNaN(parseFloat(newBid.value))) throw "Invalid Bid!";
       if (parseFloat(newBid.value) <= parseFloat(minPossibleBid))
         throw `You can only bid greater than ${minPossibleBid} MATIC`;
 
       await _postService.bidNft(nft.itemId, newBid.value);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
+      setLoaderContext({ ...loaderContext, loading: false });
     }
   };
   const confirmOffer = async (e) => {
     try {
       e.preventDefault();
+      setLoaderContext({ ...loaderContext, loading: true });
       await _postService.offerNft(nft.tokenId, newOffer.value);
+      setLoaderContext({ ...loaderContext, loading: false });
     } catch (error) {
       console.log(error);
+      setLoaderContext({ ...loaderContext, loading: false });
     }
   };
   const openTokenInfo = () => {

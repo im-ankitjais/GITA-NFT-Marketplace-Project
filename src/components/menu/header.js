@@ -183,12 +183,6 @@ const Header = function () {
                         <div className="item-dropdown">
                           <div className="dropdown" onClick={closeMenu2}>
                             <NavLink
-                              to="/Author"
-                              onClick={() => btn_icon(!showmenu)}
-                            >
-                              Author
-                            </NavLink>
-                            <NavLink
                               to="/create"
                               onClick={() => btn_icon(!showmenu)}
                             >
@@ -199,12 +193,6 @@ const Header = function () {
                               onClick={() => btn_icon(!showmenu)}
                             >
                               News
-                            </NavLink>
-                            <NavLink
-                              to="/works"
-                              onClick={() => btn_icon(!showmenu)}
-                            >
-                              Gallery
                             </NavLink>
                             <NavLink
                               to="/contact"
@@ -262,10 +250,8 @@ const Header = function () {
                       {openMenu2 && (
                         <div className="item-dropdown">
                           <div className="dropdown" onClick={closeMenu2}>
-                            <NavLink to="/Author">Author</NavLink>
                             <NavLink to="/create">Create NFT</NavLink>
                             <NavLink to="/news">News</NavLink>
-                            <NavLink to="/works">Gallery</NavLink>
                             <NavLink to="/contact">Contact Us</NavLink>
                           </div>
                         </div>
